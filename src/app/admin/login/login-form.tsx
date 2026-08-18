@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
@@ -13,31 +13,82 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
 
+  const [mode, setMode] = useState<"signin" | "create">("signin");
+  const [allowCreate, setAllowCreate] = useState(false);
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(
-    errorParam === "unauthorized"
-      ? "Your account does not have staff access."
-      : errorParam === "auth"
-        ? "Sign in failed. Please try again."
-        : "",
+    errorParam === "auth" ? "Sign in failed. Please try again." : "",
   );
+  const [info, setInfo] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+
+    const supabase = createClient();
+    void supabase.rpc("admin_exists").then(({ data }) => {
+      const exists = data === true;
+      setAllowCreate(!exists);
+      if (!exists) setMode("create");
+    });
+  }, []);
+
+  async function goToDashboard() {
+    router.push("/admin");
+    router.refresh();
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setInfo("");
 
     if (!isSupabaseConfigured()) {
-      setError(
-        "Supabase is not connected yet. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.",
-      );
+      setError("Supabase is not connected yet.");
       setLoading(false);
       return;
     }
 
     const supabase = createClient();
+
+    if (mode === "create") {
+      const origin = window.location.origin;
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName.trim() || email },
+          emailRedirectTo: `${origin}/auth/callback?next=/admin`,
+        },
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (!data.session) {
+        setInfo("Account created. Check email if confirmation is on, then sign in.");
+        setMode("signin");
+        setLoading(false);
+        return;
+      }
+
+      const { error: bootstrapError } = await supabase.rpc("bootstrap_admin");
+      if (bootstrapError) {
+        setError(bootstrapError.message);
+        setLoading(false);
+        return;
+      }
+
+      await goToDashboard();
+      return;
+    }
+
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -49,8 +100,7 @@ export default function LoginForm() {
       return;
     }
 
-    router.push("/admin");
-    router.refresh();
+    await goToDashboard();
   }
 
   return (
@@ -62,13 +112,23 @@ export default function LoginForm() {
               M
             </span>
             <div>
-              <h1 className="font-semibold text-text-primary">Staff login</h1>
-              <p className="text-sm text-text-muted">Maan Armada admin</p>
+              <h1 className="font-semibold text-text-primary">
+                {mode === "create" ? "Create account" : "Sign in"}
+              </h1>
+              <p className="text-sm text-text-muted">Kitchen dashboard</p>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === "create" && (
+              <Input
+                label="Your name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                autoComplete="name"
+              />
+            )}
             <Input
               label="Email"
               type="email"
@@ -83,16 +143,40 @@ export default function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password"
+              autoComplete={mode === "create" ? "new-password" : "current-password"}
+              minLength={6}
             />
             {error && <p className="text-sm text-error">{error}</p>}
+            {info && <p className="text-sm text-success">{info}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in…" : "Sign in"}
+              {loading
+                ? "Please wait…"
+                : mode === "create"
+                  ? "Create account"
+                  : "Sign in"}
             </Button>
           </form>
-          <p className="mt-6 text-center text-sm text-text-muted">
-            <a href="/" className="hover:text-brand">← Back to site</a>
-          </p>
+          {allowCreate && (
+            <p className="mt-6 text-center text-sm text-text-muted">
+              {mode === "create" ? (
+                <button
+                  type="button"
+                  className="hover:text-brand"
+                  onClick={() => setMode("signin")}
+                >
+                  Already have an account? Sign in
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="hover:text-brand"
+                  onClick={() => setMode("create")}
+                >
+                  Create account
+                </button>
+              )}
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>
