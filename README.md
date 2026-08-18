@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Maan Armada — Tiffin / Cloud Kitchen Platform
 
-## Getting Started
+Phase 1: menu catalogue, weekly menu template, customer today's menu, admin dashboard.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router)
+- **Supabase** (PostgreSQL, Auth, RLS)
+- **Tailwind CSS 4** with shared design tokens
+
+## Setup
+
+### 1. Supabase
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Run the migration in **SQL Editor**:
+   - Copy contents of `supabase/migrations/001_initial_schema.sql`
+3. Create an admin user:
+   - Authentication → Users → Add user (email + password)
+   - SQL Editor:
+     ```sql
+     update public.profiles
+     set role = 'admin'
+     where id = '<user-uuid-from-auth-users>';
+     ```
+
+### 2. Environment
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+- Customer site: [http://localhost:3000](http://localhost:3000)
+- Admin: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 
-To learn more about Next.js, take a look at the following resources:
+## Brand colours
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Edit CSS variables in `src/app/globals.css`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```css
+--brand-primary: #c45c26;
+--brand-secondary: #2d5a3d;
+/* ... */
+```
 
-## Deploy on Vercel
+All customer and admin UI reads from the same tokens.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Schema overview
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Table | Purpose |
+|-------|---------|
+| `profiles` | User roles: customer, admin, delivery |
+| `menu_items` | Reusable dish catalogue |
+| `weekly_menu_items` | Day-of-week + meal slot assignments |
+| `daily_menu_items` | Per-date overrides (Phase 1 schema, UI later) |
+| `meal_slot_config` | Breakfast / lunch / dinner cutoff times |
+
+Menu resolution: `get_menu_for_date(date)` — daily overrides win per slot, else weekly template.
+
+## Routes
+
+| Path | Access |
+|------|--------|
+| `/` | Public — today's menu |
+| `/admin/login` | Staff sign-in |
+| `/admin` | Dashboard |
+| `/admin/menu-items` | CRUD catalogue |
+| `/admin/weekly-menu` | Weekly template builder |
