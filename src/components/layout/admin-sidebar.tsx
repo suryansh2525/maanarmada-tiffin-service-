@@ -8,11 +8,15 @@ import {
   UtensilsCrossed,
   CalendarCheck,
   Settings,
+  CircleAlert,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/pending", label: "Pending verification", icon: CircleAlert },
+  { href: "/admin/orders", label: "Today's orders", icon: ClipboardList },
   { href: "/admin/today", label: "Today's menu", icon: CalendarCheck },
   { href: "/admin/menu-items", label: "Menu items", icon: UtensilsCrossed },
   { href: "/admin/weekly-menu", label: "Weekly menu", icon: CalendarDays },

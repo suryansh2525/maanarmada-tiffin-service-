@@ -1,15 +1,17 @@
 import { type MealSlot, MEAL_SLOT_LABELS } from "@/types/database";
 import { formatPrice } from "@/lib/menu";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { ResolvedMenuRow } from "@/types/database";
 
 interface MenuItemCardProps {
   item: ResolvedMenuRow;
   showSource?: boolean;
+  onAdd?: (item: ResolvedMenuRow) => void;
 }
 
-export function MenuItemCard({ item, showSource = false }: MenuItemCardProps) {
+export function MenuItemCard({ item, showSource = false, onAdd }: MenuItemCardProps) {
   return (
     <Card className="overflow-hidden">
       <CardContent className="flex items-start justify-between gap-4 py-4">
@@ -25,6 +27,17 @@ export function MenuItemCard({ item, showSource = false }: MenuItemCardProps) {
               {item.description}
             </p>
           )}
+          {onAdd && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="mt-3"
+              onClick={() => onAdd(item)}
+            >
+              Add
+            </Button>
+          )}
         </div>
         <p className="shrink-0 text-sm font-semibold text-brand">
           {formatPrice(item.price)}
@@ -38,12 +51,14 @@ interface MealSlotSectionProps {
   slot: MealSlot;
   items: ResolvedMenuRow[];
   showSource?: boolean;
+  onAdd?: (item: ResolvedMenuRow) => void;
 }
 
 export function MealSlotSection({
   slot,
   items,
   showSource = false,
+  onAdd,
 }: MealSlotSectionProps) {
   if (items.length === 0) return null;
 
@@ -58,6 +73,7 @@ export function MealSlotSection({
             key={`${item.meal_slot}-${item.menu_item_id}`}
             item={item}
             showSource={showSource}
+            onAdd={onAdd}
           />
         ))}
       </div>

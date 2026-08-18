@@ -8,6 +8,7 @@ import {
   todayDateString,
 } from "@/lib/menu";
 import { getAllMenuItems, getMenuForDate } from "@/lib/menu-queries";
+import { getPendingCount, getTodaysKitchenOrders } from "@/lib/order-queries";
 import { MEAL_SLOTS } from "@/types/database";
 
 export default async function AdminDashboardPage() {
@@ -16,6 +17,10 @@ export default async function AdminDashboardPage() {
   const grouped = groupMenuBySlot(menuRows);
   const allItems = await getAllMenuItems();
   const activeCount = allItems.filter((i) => i.is_active).length;
+  const [pendingCount, todayOrders] = await Promise.all([
+    getPendingCount(),
+    getTodaysKitchenOrders(today),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -27,47 +32,32 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
+        <Link href="/admin/pending">
+          <Card className="h-full transition-colors hover:border-border-strong">
+            <CardContent className="py-4">
+              <p className="text-sm text-text-muted">Pending verification</p>
+              <p className="mt-1 text-2xl font-semibold text-text-primary">
+                {pendingCount}
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/admin/orders">
+          <Card className="h-full transition-colors hover:border-border-strong">
+            <CardContent className="py-4">
+              <p className="text-sm text-text-muted">Today&apos;s confirmed orders</p>
+              <p className="mt-1 text-2xl font-semibold text-text-primary">
+                {todayOrders.length}
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
         <Card>
           <CardContent className="py-4">
             <p className="text-sm text-text-muted">Active menu items</p>
             <p className="mt-1 text-2xl font-semibold text-text-primary">
               {activeCount}
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-sm text-text-muted">Items on today&apos;s menu</p>
-            <p className="mt-1 text-2xl font-semibold text-text-primary">
-              {menuRows.length}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4">
-            <p className="text-sm text-text-muted">Quick links</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <Link
-                href="/admin/today"
-                className="text-sm font-medium text-brand hover:underline"
-              >
-                Today&apos;s menu
-              </Link>
-              <span className="text-text-muted">·</span>
-              <Link
-                href="/admin/menu-items"
-                className="text-sm font-medium text-brand hover:underline"
-              >
-                Add items
-              </Link>
-              <span className="text-text-muted">·</span>
-              <Link
-                href="/admin/weekly-menu"
-                className="text-sm font-medium text-brand hover:underline"
-              >
-                Weekly menu
-              </Link>
-            </div>
           </CardContent>
         </Card>
       </div>
