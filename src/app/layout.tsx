@@ -1,3 +1,4 @@
+import { BRAND_NAME } from "@/lib/brand";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Maan Armada",
-    template: "%s · Maan Armada",
+    default: BRAND_NAME,
+    template: `%s · ${BRAND_NAME}`,
   },
   description: "Fresh tiffin meals — breakfast, lunch & dinner",
 };

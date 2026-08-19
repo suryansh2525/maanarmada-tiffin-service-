@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
+import { BRAND_INITIAL, BRAND_NAME } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -104,18 +105,20 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface px-4">
+    <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-8">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand text-sm font-bold text-text-on-brand">
-              M
+          <div className="flex flex-col items-center gap-3 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-lg font-bold text-text-on-brand">
+              {BRAND_INITIAL}
             </span>
             <div>
-              <h1 className="font-semibold text-text-primary">
-                {mode === "create" ? "Create account" : "Sign in"}
+              <h1 className="text-xl font-semibold leading-snug text-text-primary">
+                {BRAND_NAME}
               </h1>
-              <p className="text-sm text-text-muted">Kitchen dashboard</p>
+              <p className="mt-1 text-sm text-text-muted">
+                {mode === "create" ? "Create your kitchen account" : "Kitchen login"}
+              </p>
             </div>
           </div>
         </CardHeader>

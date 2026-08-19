@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/layout/site-header";
+import { BRAND_NAME } from "@/lib/brand";
 
 export default function CustomerLayout({ children }: LayoutProps<"/">) {
   return (
@@ -8,7 +9,7 @@ export default function CustomerLayout({ children }: LayoutProps<"/">) {
         {children}
       </main>
       <footer className="border-t border-border py-6 text-center text-sm text-text-muted">
-        Maan Armada · Fresh meals delivered daily
+        {BRAND_NAME} · Fresh meals delivered daily
       </footer>
     </>
   );

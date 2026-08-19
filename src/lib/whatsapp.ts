@@ -17,7 +17,7 @@ export function paymentWhatsAppUrl(order: Order, settings: KitchenSettings | nul
     .join(", ");
 
   const text = [
-    `Payment for ${settings?.kitchen_name ?? "Maan Armada"}`,
+    `Payment for ${settings?.kitchen_name ?? "Maa Narmada Tiffin Service"}`,
     `Order ${displayOrderNumber(order.order_number)}`,
     `Amount ${formatPrice(order.amount)}`,
     `Name: ${order.customer_name}`,

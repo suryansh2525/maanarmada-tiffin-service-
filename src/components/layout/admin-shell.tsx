@@ -15,6 +15,7 @@ import {
   X,
   LogOut,
 } from "lucide-react";
+import { BRAND_INITIAL, BRAND_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/actions/menu";
 import { Button } from "@/components/ui/button";
@@ -93,7 +94,7 @@ export function AdminShell({
   return (
     <div className="flex min-h-screen flex-col bg-surface">
       <header className="sticky top-0 z-40 border-b border-border bg-surface-elevated">
-        <div className="flex h-14 items-center gap-2 px-3 sm:px-4">
+        <div className="flex min-h-14 items-center gap-2 px-3 py-2 sm:px-4">
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center rounded-lg text-text-primary hover:bg-brand-light lg:hidden"
@@ -105,10 +106,10 @@ export function AdminShell({
 
           <Link href="/admin" className="flex min-w-0 flex-1 items-center gap-2">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand text-sm font-bold text-text-on-brand">
-              M
+              {BRAND_INITIAL}
             </span>
-            <span className="truncate font-semibold text-text-primary">
-              Maan Armada
+            <span className="text-sm font-semibold leading-tight text-text-primary sm:text-base">
+              {BRAND_NAME}
             </span>
           </Link>
 

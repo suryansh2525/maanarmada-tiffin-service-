@@ -59,7 +59,7 @@ export function SettingsForms({ settings, slots }: SettingsFormsProps) {
             <Input
               label="Kitchen name"
               name="kitchen_name"
-              defaultValue={settings?.kitchen_name ?? "Maan Armada"}
+              defaultValue={settings?.kitchen_name ?? "Maa Narmada Tiffin Service"}
               required
             />
             <Input
