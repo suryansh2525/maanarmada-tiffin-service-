@@ -64,11 +64,12 @@ export function WeeklyMenuBuilder({
             onClick={() => setSelectedDay(index)}
             className={
               selectedDay === index
-                ? "rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-text-on-brand"
-                : "rounded-lg border border-border bg-surface-elevated px-3 py-1.5 text-sm font-medium text-text-secondary hover:border-border-strong"
+                ? "rounded-lg bg-brand px-2.5 py-1.5 text-sm font-medium text-text-on-brand sm:px-3"
+                : "rounded-lg border border-border bg-surface-elevated px-2.5 py-1.5 text-sm font-medium text-text-secondary hover:border-border-strong sm:px-3"
             }
           >
-            {label}
+            <span className="sm:hidden">{label.slice(0, 3)}</span>
+            <span className="hidden sm:inline">{label}</span>
           </button>
         ))}
       </div>

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/require-admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
@@ -120,10 +121,13 @@ export async function removeWeeklyMenuItem(id: string) {
 }
 
 export async function signOut() {
-  if (!isSupabaseConfigured()) return;
+  if (!isSupabaseConfigured()) {
+    redirect("/admin/login");
+  }
   const supabase = await createClient();
   await supabase.auth.signOut();
   revalidatePath("/admin");
+  redirect("/admin/login");
 }
 
 function revalidateMenus(date?: string) {

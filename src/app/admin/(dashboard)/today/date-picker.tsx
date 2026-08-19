@@ -13,18 +13,19 @@ export function DatePicker({ date }: { date: string }) {
   }
 
   return (
-    <div className="flex flex-wrap items-end gap-2">
+    <div className="flex w-full items-center gap-2">
       <Button variant="secondary" size="sm" onClick={() => go(shiftDate(date, -1))}>
-        Previous
+        Prev
       </Button>
-      <Input
-        type="date"
-        value={date}
-        className="w-auto"
-        onChange={(e) => {
-          if (e.target.value) go(e.target.value);
-        }}
-      />
+      <div className="min-w-0 flex-1">
+        <Input
+          type="date"
+          value={date}
+          onChange={(e) => {
+            if (e.target.value) go(e.target.value);
+          }}
+        />
+      </div>
       <Button variant="secondary" size="sm" onClick={() => go(shiftDate(date, 1))}>
         Next
       </Button>
